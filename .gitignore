@@ -1,0 +1,38 @@
+# Environment variables (IMPORTANT — never push secrets)
+.env
+.env.local
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# PyCharm / IDE
+.idea/
+.vscode/
+
+# Alembic (keep migration files, ignore only if needed — usually alembic folder IS tracked)
+# Don't ignore alembic/ — those migration files should be committed
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Logs
+*.log
