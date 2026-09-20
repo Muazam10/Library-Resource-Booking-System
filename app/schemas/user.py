@@ -10,6 +10,7 @@ class UserOut(BaseModel):
     id: uuid.UUID
     name: str
     email: EmailStr
+    role: str
     class Config:
         from_attributes = True
 

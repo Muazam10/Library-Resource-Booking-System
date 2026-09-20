@@ -11,3 +11,7 @@ A backend system for booking shared resources (seats, rooms, equipment) with dat
 - [ ] Milestone 4: Booking Creation + Conflict Detection
 - [ ] Milestone 5: Booking Management
 - [ ] Milestone 6: Admin & Reporting
+
+
+### Server Reload
+uvicorn app.main:app --reload
