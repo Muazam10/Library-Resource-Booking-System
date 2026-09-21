@@ -7,6 +7,9 @@ from app.models.resource import Resource
 from app.models.user import User
 from app.schemas.booking import BookingCreate, BookingOut
 from app.core.security import get_current_user
+from typing import List
+import uuid
+from app.models.booking import BookingStatus
 
 router = APIRouter(prefix="/bookings", tags=["bookings"])
 
@@ -40,4 +43,45 @@ def create_booking(
         )
     db.refresh(new_booking)
     return new_booking
+
+@router.get("/me", response_model=List[BookingOut])
+def list_my_bookings(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return db.query(Booking).filter(Booking.user_id == current_user.id).all()
+
+
+@router.get("/{booking_id}", response_model=BookingOut)
+def get_booking(
+    booking_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    booking = db.query(Booking).filter(Booking.id == booking_id).first()
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+
+    if booking.user_id != current_user.id and current_user.role.value != "admin":
+        raise HTTPException(status_code=403, detail="Not allowed to view this booking")
+
+    return booking
+
+
+@router.delete("/{booking_id}")
+def cancel_booking(
+    booking_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    booking = db.query(Booking).filter(Booking.id == booking_id).first()
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+
+    if booking.user_id != current_user.id and current_user.role.value != "admin":
+        raise HTTPException(status_code=403, detail="Not allowed to cancel this booking")
+
+    booking.status = BookingStatus.cancelled
+    db.commit()
+    return {"detail": "Booking cancelled successfully"}
 
