@@ -3,6 +3,7 @@ from app.core.config import settings
 from app.db.session import Base
 from app.models.user import User
 from app.models.resource import Resource
+from app.models.booking import Booking
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool

@@ -4,12 +4,13 @@ from sqlalchemy import text
 from app.db.session import get_db
 from app.api import auth
 from app.api import resource
+from app.api import booking
 
 app = FastAPI(title="Library & Resource Booking System")
 
 app.include_router(auth.router)
-
 app.include_router(resource.router)
+app.include_router(booking.router)
 
 @app.get("/")
 def root():
