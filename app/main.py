@@ -3,10 +3,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.db.session import get_db
 from app.api import auth
+from app.api import resource
 
 app = FastAPI(title="Library & Resource Booking System")
 
 app.include_router(auth.router)
+
+app.include_router(resource.router)
 
 @app.get("/")
 def root():

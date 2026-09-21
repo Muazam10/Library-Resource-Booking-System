@@ -6,7 +6,7 @@ A backend system for booking shared resources (seats, rooms, equipment) with dat
 
 ## Progress
 - [x] Milestone 1: Authentication (register, login, JWT)
-- [ ] Milestone 2: Resource Management (Create + Read)
+- [x] Milestone 2: Resource Management (Create + Read)
 - [ ] Milestone 3: Resource Management (Update + Delete)
 - [ ] Milestone 4: Booking Creation + Conflict Detection
 - [ ] Milestone 5: Booking Management
