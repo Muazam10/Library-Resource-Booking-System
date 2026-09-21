@@ -10,6 +10,10 @@ from app.core.security import get_current_user
 from typing import List
 import uuid
 from app.models.booking import BookingStatus
+from datetime import datetime
+from typing import Optional
+from fastapi import Query
+from app.core.security import require_admin
 
 router = APIRouter(prefix="/bookings", tags=["bookings"])
 
@@ -84,4 +88,22 @@ def cancel_booking(
     booking.status = BookingStatus.cancelled
     db.commit()
     return {"detail": "Booking cancelled successfully"}
+
+
+@router.get("/admin/all", response_model=List[BookingOut])
+def list_all_bookings(
+    resource_id: Optional[uuid.UUID] = Query(None),
+    status: Optional[BookingStatus] = Query(None),
+    start_after: Optional[datetime] = Query(None),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    query = db.query(Booking)
+    if resource_id:
+        query = query.filter(Booking.resource_id == resource_id)
+    if status:
+        query = query.filter(Booking.status == status)
+    if start_after:
+        query = query.filter(Booking.start_time >= start_after)
+    return query.all()
 

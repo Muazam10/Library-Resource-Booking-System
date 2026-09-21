@@ -8,6 +8,8 @@ from app.core.security import require_admin, get_current_user
 from typing import List, Optional
 import uuid
 from app.schemas.resource import ResourceUpdate
+from app.models.booking import Booking
+from app.schemas.booking import BookingOut
 
 router = APIRouter(prefix="/resources", tags=["resources"])
 
@@ -88,3 +90,16 @@ def delete_resource(
     resource.is_active = False
     db.commit()
     return {"detail": "Resource deactivated successfully"}
+
+@router.get("/{resource_id}/bookings", response_model=List[BookingOut])
+def get_resource_bookings(
+    resource_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    resource = db.query(Resource).filter(Resource.id == resource_id).first()
+    if not resource:
+        raise HTTPException(status_code=404, detail="Resource not found")
+
+    return db.query(Booking).filter(Booking.resource_id == resource_id).all()
+
