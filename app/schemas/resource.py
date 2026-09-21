@@ -19,3 +19,10 @@ class ResourceOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ResourceUpdate(BaseModel):
+    name: Optional[str] = None
+    type: Optional[ResourceType] = None
+    location: Optional[str] = None
+    capacity: Optional[int] = None
+

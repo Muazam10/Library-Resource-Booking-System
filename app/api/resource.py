@@ -7,6 +7,7 @@ from app.schemas.resource import ResourceCreate, ResourceOut
 from app.core.security import require_admin, get_current_user
 from typing import List, Optional
 import uuid
+from app.schemas.resource import ResourceUpdate
 
 router = APIRouter(prefix="/resources", tags=["resources"])
 
@@ -53,3 +54,37 @@ def get_resource(
     if not resource:
         raise HTTPException(status_code=404, detail="Resource not found")
     return resource
+
+@router.put("/{resource_id}", response_model=ResourceOut)
+def update_resource(
+    resource_id: uuid.UUID,
+    resource_in: ResourceUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    resource = db.query(Resource).filter(Resource.id == resource_id).first()
+    if not resource:
+        raise HTTPException(status_code=404, detail="Resource not found")
+
+    update_data = resource_in.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(resource, field, value)
+
+    db.commit()
+    db.refresh(resource)
+    return resource
+
+
+@router.delete("/{resource_id}")
+def delete_resource(
+    resource_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    resource = db.query(Resource).filter(Resource.id == resource_id).first()
+    if not resource:
+        raise HTTPException(status_code=404, detail="Resource not found")
+
+    resource.is_active = False
+    db.commit()
+    return {"detail": "Resource deactivated successfully"}
